@@ -8,5 +8,4 @@ urlpatterns = [
     path('auth/', include('djoser.urls.jwt')),
 ]
 
-urlpatterns += doc_urls
-
+# urlpatterns += doc_urls
