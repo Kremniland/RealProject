@@ -1,8 +1,21 @@
+import pdb
+
 from django.contrib.auth import get_user_model
 
 from django.db import models
 
+from common.mixins import BaseDictModelMixin
+
+
 User = get_user_model()
+
+BREAK_CREATED_STATUS = 'created'
+
+BREAK_CREATED_DEFAULT = {
+    'name': 'Создано',
+    'is_active': True,
+    'sort': 100,
+}
 
 
 class Organisation(models.Model):
@@ -57,19 +70,17 @@ class Group(models.Model):
         return f'{self.name} ({self.pk})'
 
 
-class ReplacementStatus(models.Model):
-    code = models.CharField(verbose_name='Код', max_length=16, primary_key=True)
-    name = models.CharField(verbose_name='Название', max_length=32, )
-    sort = models.PositiveSmallIntegerField(verbose_name='Сортировка', null=True, blank=True)
-    is_active = models.BooleanField(verbose_name='Активность', default=True)
+class ReplacementStatus(BaseDictModelMixin):
 
     class Meta:
         verbose_name = 'Статус смены'
         verbose_name_plural = 'Статусы смены'
-        ordering = ('sort',)
 
-    def __str__(self):
-        return f'{self.code} для {self.name}'
+
+class BreakStatus(BaseDictModelMixin):
+    class Meta:
+        verbose_name = 'Статус обеда'
+        verbose_name_plural = 'Статусы обеда'
 
 
 class Replacement(models.Model):
@@ -113,4 +124,38 @@ class ReplacementEmployee(models.Model):
 
     def __str__(self):
         return f'Смена {self.replacement} для {self.employee}'
+
+
+class Break(models.Model):
+    replacement = models.ForeignKey(
+        to=Replacement, on_delete=models.CASCADE, related_name='breaks', verbose_name='Смена',
+    )
+    employee = models.ForeignKey(
+        to=User, on_delete=models.CASCADE, related_name='breaks', verbose_name='Сотрудник',
+    )
+    break_start = models.TimeField(verbose_name='Начало обеда', null=True, blank=True,)
+    break_end = models.TimeField(verbose_name='Конец обеда', null=True, blank=True,)
+    status = models.ForeignKey(
+        to=BreakStatus, on_delete=models.RESTRICT, related_name='breaks', verbose_name='Статус',
+        blank=True,
+    )
+
+    class Meta:
+        verbose_name = 'Обеденный перерыв'
+        verbose_name_plural = 'Обеденный перерывы'
+        ordering = ('-replacement__date', 'break_start')
+
+    def __str__(self):
+        return f'Обед пользователя {self.employee} ({self.pk})'
+
+    def save(self, *args, **kwargs):
+        # pdb.set_trace() # дойдя до этого места перебросит в консоль для дебага
+        if not self.pk:
+            status, created = BreakStatus.objects.get_or_create(
+                code=BREAK_CREATED_STATUS,
+                defaults=BREAK_CREATED_DEFAULT
+            )
+
+            self.status = status
+        return super(Break, self).save(*args, **kwargs)
 

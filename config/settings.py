@@ -4,6 +4,8 @@ from pathlib import Path
 import environ
 
 
+AUTH_USER_MODEL = 'users.User'
+
 root = environ.Path(__file__) - 2
 
 print(root)
@@ -33,9 +35,11 @@ INSTALLED_APPS += [
     'django_filters',
     'corsheaders',
     'djoser',
+    'phonenumber_field'
 ]
 
 INSTALLED_APPS += [
+    'users',
     'api',
     'common',
 ]
@@ -208,3 +212,17 @@ SIMPLE_JWT = {
     'SLIDING_TOKEN_LIFETIME': timedelta(minutes=1),
     'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=7),
 }
+
+# Для вывода ORM запросов в консоль
+# LOGGING = {
+#     'version': 1,
+#     'handlers': {
+#         'console': {'class': 'logging.StreamHandler'},
+#     },
+#     'loggers': {
+#         'django.db.backends': {
+#             'handlers': ['console'],
+#             'level': 'DEBUG'
+#             }
+#         }
+# }
