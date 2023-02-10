@@ -3,8 +3,8 @@ from datetime import timedelta
 from pathlib import Path
 import environ
 
-
 AUTH_USER_MODEL = 'users.User'
+AUTHENTICATION_BACKENDS = ('users.backends.AuthBackend',)
 
 root = environ.Path(__file__) - 2
 
@@ -19,7 +19,6 @@ BASE_DIR = root()
 SECRET_KEY = env.str('SECRET_KEY')
 DEBUG = env.bool('DEBUG', True)
 ALLOWED_HOSTS = env.str('ALLOWED_HOSTS', default='').split(' ')
-
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -158,7 +157,7 @@ REST_FRAMEWORK = {
 # SPECTACULAR#################################################################
 SPECTACULAR_SETTINGS = {
     'TITLE': 'Real Project',
-        'DESCRIPTION': 'Real Project',
+    'DESCRIPTION': 'Real Project',
     'VERSION': '1.0.0',
 
     'SERVE_PERMISSIONS': [

@@ -1,6 +1,8 @@
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from rest_framework.exceptions import ParseError
 
 from phonenumber_field.modelfields import PhoneNumberField
@@ -73,3 +75,26 @@ class User(AbstractUser):
     def __str__(self):
         return f'{self.full_name} ({self.pk})'
 
+
+class Profile(models.Model):
+    user = models.OneToOneField(
+        'users.User', models.CASCADE, related_name='profile',
+        verbose_name='Пользователь', primary_key=True,
+    )
+    telegram_id = models.CharField(
+        'Telegram ID', max_length=20, null=True, blank=True
+    )
+
+    class Meta:
+        verbose_name = 'Профиль пользователя'
+        verbose_name_plural = 'Профили пользователей'
+
+    def __str__(self):
+        return f'{self.user} ({self.pk})'
+
+
+@receiver(post_save, sender=User)
+def post_save_user(sender, instance, created, **kwargs):
+    '''Используя сигнал создаем профиль при создании пользователя'''
+    if not hasattr(instance, 'profile'):
+        Profile.objects.create(user=instance)
