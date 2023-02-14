@@ -59,8 +59,8 @@ class User(AbstractUser):
     )
     email = models.EmailField('Почта', unique=True, null=True, blank=True)
     phone_number = PhoneNumberField('Телефон', unique=True, null=True, blank=True)
-    USERNAME_FIELD = 'username'
-    REQUIRED_FIELDS = ['email']
+    USERNAME_FIELD = 'username' # Поле используется в качастве имени
+    REQUIRED_FIELDS = ['phone_number'] # Запрашивается при создании суперюзера
 
     objects = CustomUserManager()
 
