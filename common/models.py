@@ -4,7 +4,7 @@ from django.contrib.auth import get_user_model
 
 from django.db import models
 
-from common.mixins import BaseDictModelMixin, InfoMixin
+from common.model_mixins import BaseDictModelMixin, InfoMixin
 
 
 User = get_user_model()
@@ -16,6 +16,13 @@ BREAK_CREATED_DEFAULT = {
     'is_active': True,
     'sort': 100,
 }
+
+
+class Position(BaseDictModelMixin):
+
+    class Meta:
+        verbose_name = 'Должность'
+        verbose_name_plural = 'Должности'
 
 
 class Organisation(InfoMixin):
