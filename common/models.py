@@ -4,7 +4,7 @@ from django.contrib.auth import get_user_model
 
 from django.db import models
 
-from common.mixins import BaseDictModelMixin
+from common.mixins import BaseDictModelMixin, InfoMixin
 
 
 User = get_user_model()
@@ -18,7 +18,7 @@ BREAK_CREATED_DEFAULT = {
 }
 
 
-class Organisation(models.Model):
+class Organisation(InfoMixin):
     name = models.CharField(verbose_name='Название', max_length=255)
     director = models.ForeignKey(
         to=User, on_delete=models.RESTRICT, related_name='organisation_directors',
@@ -38,7 +38,7 @@ class Organisation(models.Model):
         return f'{self.name} ({self.pk})'
 
 
-class Group(models.Model):
+class Group(InfoMixin):
     organisation = models.ForeignKey(
         to=Organisation, on_delete=models.CASCADE, related_name='groups',
         verbose_name='Организация',

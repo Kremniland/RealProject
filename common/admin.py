@@ -19,6 +19,9 @@ class OrganisationAdmin(admin.ModelAdmin):
     list_display = ('id', 'name', 'director',)
     search_fields = ('name',)
     filter_horizontal = ('employees',)
+    readonly_fields = (
+        'created_at', 'created_by', 'updated_at', 'updated_by',
+    )
 
 
 @admin.register(Group)
@@ -28,6 +31,10 @@ class GroupAdmin(admin.ModelAdmin):
     autocomplete_fields = ('organisation',)
 
     list_select_related = ('organisation',)
+
+    readonly_fields = (
+        'created_at', 'created_by', 'updated_at', 'updated_by',
+    )
 
     def replacement_count(self, obj):
         return obj.replacement_count
